@@ -1,32 +1,25 @@
 // errors2.rs
 //
-// Say we're writing a game where you can buy items with tokens. All items cost
-// 5 tokens, and whenever you purchase items there is a processing fee of 1
-// token. A player of the game will type in how many items they want to buy, and
-// the `total_cost` function will calculate the total cost of the tokens. Since
-// the player typed in the quantity, though, we get it as a string-- and they
-// might have typed anything, not just numbers!
+// 假设我们正在编写一款可以用代币购买物品的游戏。每件物品需要 5 个代币，
+// 每次购买还要额外支付 1 个代币的手续费。
+// 玩家会输入想购买的物品数量，`total_cost` 函数负责计算总共需要多少代币。
+// 不过，玩家输入的数量是一个字符串，他们可能输入任何内容，不一定是数字！
 //
-// Right now, this function isn't handling the error case at all (and isn't
-// handling the success case properly either). What we want to do is: if we call
-// the `parse` function on a string that is not a number, that function will
-// return a `ParseIntError`, and in that case, we want to immediately return
-// that error from our function and not try to multiply and add.
+// 目前，这个函数完全没有处理解析失败的情况，也没有正确处理解析成功的情况。
+// 我们希望实现的行为是：当字符串无法解析为整数时，`parse` 会返回包含
+// `ParseIntError` 的错误结果。此时应立即从当前函数返回这个错误，
+// 不再继续执行后面的乘法和加法运算。
 //
-// There are at least two ways to implement this that are both correct-- but one
-// is a lot shorter!
+// 至少有两种正确的实现方式，其中一种要简短得多！
 //
-// Execute `rustlings hint errors2` or use the `hint` watch subcommand for a
-// hint.
-
-// I AM NOT DONE
+// 执行 `rustlings hint errors2`，或在监视模式下使用 `hint` 子命令查看提示。
 
 use std::num::ParseIntError;
 
 pub fn total_cost(item_quantity: &str) -> Result<i32, ParseIntError> {
     let processing_fee = 1;
     let cost_per_item = 5;
-    let qty = item_quantity.parse::<i32>();
+    let qty = item_quantity.parse::<i32>()?;
 
     Ok(qty * cost_per_item + processing_fee)
 }
