@@ -2,8 +2,8 @@
   "schema": 1,
   "courseId": 2084,
   "repository": "LearningOS/2026a-rustling-shanglizcpj",
-  "commit": "2c88bfe3dc78f53154e18c495f9357762e0b46fb",
-  "score": 90,
+  "commit": "56aab20ec4c986dc37271e14725c04ea1693b5a6",
+  "score": 93,
   "totalScore": 110,
   "exercises": [
     {
@@ -618,23 +618,23 @@
     {
       "name": "clippy1",
       "max": 1,
-      "score": 0,
-      "status": "fail",
-      "exitCode": 1
+      "score": 1,
+      "status": "pass",
+      "exitCode": 0
     },
     {
       "name": "clippy2",
       "max": 1,
-      "score": 0,
-      "status": "fail",
-      "exitCode": 1
+      "score": 1,
+      "status": "pass",
+      "exitCode": 0
     },
     {
       "name": "clippy3",
       "max": 1,
-      "score": 0,
-      "status": "fail",
-      "exitCode": 1
+      "score": 1,
+      "status": "pass",
+      "exitCode": 0
     },
     {
       "name": "using_as",
@@ -778,9 +778,9 @@
     }
   ],
   "student": "shanglizcpj",
-  "runId": "42781619993",
+  "runId": "42999611150",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
