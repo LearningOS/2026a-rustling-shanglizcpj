@@ -1,8 +1,7 @@
 /*
-	graph
-	This problem requires you to implement a basic graph functio
+    graph
+    This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
 
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -29,7 +28,19 @@ impl Graph for UndirectedGraph {
         &self.adjacency_table
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let (from, to, weight) = edge;
+        self.add_node(from);
+        self.add_node(to);
+
+        let table = self.adjacency_table_mutable();
+        table
+            .get_mut(from)
+            .expect("source node was added")
+            .push((to.to_owned(), weight));
+        table
+            .get_mut(to)
+            .expect("destination node was added")
+            .push((from.to_owned(), weight));
     }
 }
 pub trait Graph {
@@ -37,11 +48,21 @@ pub trait Graph {
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
-        //TODO
-		true
+        if self.contains(node) {
+            return false;
+        }
+        self.adjacency_table_mutable()
+            .insert(node.to_owned(), Vec::new());
+        true
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let (from, to, weight) = edge;
+        self.add_node(from);
+        self.add_node(to);
+        self.adjacency_table_mutable()
+            .get_mut(from)
+            .expect("source node was added")
+            .push((to.to_owned(), weight));
     }
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
@@ -64,6 +85,18 @@ mod test_undirected_graph {
     use super::Graph;
     use super::UndirectedGraph;
     #[test]
+    fn test_add_node_is_idempotent() {
+        let mut graph = UndirectedGraph::new();
+        assert!(graph.add_node("a"));
+        assert!(graph.contains("a"));
+
+        graph.add_edge(("a", "b", 5));
+        assert!(!graph.add_node("a"));
+        assert_eq!(graph.nodes().len(), 2);
+        assert_eq!(graph.edges().len(), 2);
+    }
+
+    #[test]
     fn test_add_edge() {
         let mut graph = UndirectedGraph::new();
         graph.add_edge(("a", "b", 5));
@@ -80,5 +113,37 @@ mod test_undirected_graph {
         for edge in expected_edges.iter() {
             assert_eq!(graph.edges().contains(edge), true);
         }
+    }
+}
+
+#[cfg(test)]
+mod test_graph_defaults {
+    use super::*;
+
+    struct DirectedGraph(HashMap<String, Vec<(String, i32)>>);
+
+    impl Graph for DirectedGraph {
+        fn new() -> Self {
+            Self(HashMap::new())
+        }
+
+        fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>> {
+            &mut self.0
+        }
+
+        fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
+            &self.0
+        }
+    }
+
+    #[test]
+    fn test_default_add_edge_is_directed() {
+        let mut graph = DirectedGraph::new();
+        graph.add_edge(("a", "b", -3));
+
+        assert!(graph.contains("a"));
+        assert!(graph.contains("b"));
+        assert_eq!(graph.adjacency_table()["a"], vec![(String::from("b"), -3)]);
+        assert!(graph.adjacency_table()["b"].is_empty());
     }
 }
