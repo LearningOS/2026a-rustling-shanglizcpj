@@ -2,11 +2,8 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
-
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -69,15 +66,53 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+    pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self
+    where
+        T: Ord,
+    {
+        let mut merged = Self::new();
+        let mut a = list_a.start;
+        let mut b = list_b.start;
+
+        while let (Some(a_ptr), Some(b_ptr)) = (a, b) {
+            // SAFETY: The input lists own valid, disjoint node chains. Nodes
+            // stay allocated, and comparison borrows end before links change.
+            unsafe {
+                let mut chosen = if a_ptr.as_ref().val <= b_ptr.as_ref().val {
+                    a = a_ptr.as_ref().next;
+                    a_ptr
+                } else {
+                    b = b_ptr.as_ref().next;
+                    b_ptr
+                };
+
+                // Save the next cursor before detaching the chosen node.
+                chosen.as_mut().next = None;
+                match merged.end {
+                    Some(mut tail) => tail.as_mut().next = Some(chosen),
+                    None => merged.start = Some(chosen),
+                }
+                merged.end = Some(chosen);
+            }
         }
-	}
+
+        let (remaining, remaining_end) = if a.is_some() {
+            (a, list_a.end)
+        } else {
+            (b, list_b.end)
+        };
+
+        match merged.end {
+            // SAFETY: The merged tail and remaining nodes are still valid.
+            Some(mut tail) => unsafe { tail.as_mut().next = remaining },
+            None => merged.start = remaining,
+        }
+        if remaining.is_some() {
+            merged.end = remaining_end;
+        }
+        merged.length = list_a.length + list_b.length;
+        merged
+    }
 }
 
 impl<T> Display for LinkedList<T>
